@@ -1,4 +1,54 @@
+//React Dependencies
 import React from 'react';
+import ReactDOM from 'react-dom';
+
+//Redux Dependencies
+import { createStore, applyMiddleware, compose } from 'redux'
+import rootReducer from './store/reducers/rootReducer'
+import { Provider } from 'react-redux'
+import thunk from 'redux-thunk'
+
+//Firebase and Firestore Dependencies
+import fbConfig from './config/fbConfig'
+import firebase from 'firebase/app'
+import 'firebase/firestore'
+import { ReactReduxFirebaseProvider, getFirebase } from 'react-redux-firebase'
+import { reduxFirestore, getFirestore, createFirestoreInstance } from 'redux-firestore';
+
+import './index.css';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+
+//Firestore Initalization
+firebase.firestore() 
+
+const store = createStore(
+   rootReducer,
+   compose(
+      applyMiddleware(thunk.withExtraArgument({ getFirestore, getFirebase })),
+      reduxFirestore(firebase, fbConfig)
+   )
+);
+
+const rrfProps = {
+   firebase,
+   config: fbConfig,
+   dispatch: store.dispatch,
+   createFirestoreInstance
+};
+
+ReactDOM.render(
+   <Provider store={store}>
+      <ReactReduxFirebaseProvider {...rrfProps}>
+         <App />
+      </ReactReduxFirebaseProvider>
+   </Provider>,
+   document.getElementById("root")
+);
+
+serviceWorker.unregister();
+
+/* import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
@@ -32,7 +82,7 @@ ReactDOM.render(
       <ReactReduxFirebaseProvider {...rrfProps}>
          <App />
       </ReactReduxFirebaseProvider>
-   </Provider>, 
+   </Provider>,
    document.getElementById('root')
 );
 
@@ -40,3 +90,4 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+ */

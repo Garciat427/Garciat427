@@ -22,6 +22,7 @@ import * as serviceWorker from './serviceWorker';
 //Firestore Initalization
 firebase.firestore() 
 
+
 const store = createStore(
    rootReducer,
    compose(
